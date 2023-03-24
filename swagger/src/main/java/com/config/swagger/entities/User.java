@@ -1,6 +1,8 @@
 package com.config.swagger.entities;
 
 import com.config.swagger.dto.UserRequest;
+import com.config.swagger.utils.Serializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,8 +28,10 @@ public class User {
     private String email;
     @Enumerated(EnumType.STRING)
     private Gender gender ;
+    @JsonSerialize(using = Serializer.SmplTimestampSerializer.class)
     @CreationTimestamp
     private Timestamp createdAt;
+    @JsonSerialize(using = Serializer.SmplTimestampSerializer.class)
     @UpdateTimestamp
     private Timestamp updatedAt;
     private Timestamp deleteAt;
