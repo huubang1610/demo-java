@@ -20,4 +20,8 @@ public class UserRequest {
     private String email;
     @NotNull(message = " Gender không được để trống")
     private User.Gender gender;
+    @NotNull(message = " User Name không được để trống")
+    private String userName;
+    @NotNull(message = " PassWord không được để trống")
+    private String passWord;
 }

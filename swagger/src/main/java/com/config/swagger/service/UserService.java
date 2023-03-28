@@ -1,5 +1,7 @@
 package com.config.swagger.service;
 
+import com.config.swagger.dto.LoginRequest;
+import com.config.swagger.dto.UserDetails;
 import com.config.swagger.dto.UserRequest;
 import com.config.swagger.dto.redisHash.UserRedis;
 import com.config.swagger.entities.User;
@@ -9,7 +11,10 @@ import com.config.swagger.message.MessageProducer;
 import com.config.swagger.repository.UserRepository;
 import com.config.swagger.statics.Exchange;
 import com.config.swagger.statics.RoutingKey;
+import com.config.swagger.utils.ListResult;
+import com.config.swagger.utils.PageableUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,26 +34,29 @@ public class UserService {
     private final RedisTemplate<String, List<UserRedis>> redisTemplate;
     private final MessageProducer messageProducer;
 
+    public UserDetails login (LoginRequest loginRequest){
+        return UserDetails.builder().build();
+    }
 
     public User createUser(UserRequest userRequest) {
         messageProducer.sendEmail(Message.form(userRequest.getEmail()), Exchange.ACTION_USER.getName(), RoutingKey.SEND_EMAIL.getName());
         return userRepository.save(new User().form(userRequest));
     }
 
-    public List<UserRedis> getAllUsers() {
+    public ListResult<UserRedis> getAllUsers(int page, int size, String orderBy, boolean desc) {
         List<UserRedis> users = redisTemplate.opsForValue().get(KEY_ALL_USERS);
         if (users == null) {
-            users = userRepository.findAll().stream()
+            users = userRepository.findAllToPage(PageableUtils.pageable(page, size, orderBy, desc)).getContent().stream()
                     .map(UserRedis::from)
                     .collect(Collectors.toList());
             redisTemplate.opsForValue().set(KEY_ALL_USERS, users, 10, TimeUnit.SECONDS);
         }
-        return users;
+        return ListResult.from(PageableUtils.convert(users, (PageRequest) PageableUtils.pageable(page, size, orderBy, desc)));
     }
 
-    public List<UserRedis> findByName(String name) {
+    public ListResult<UserRedis> findByName(String name, int page, int size, String orderBy, boolean desc) {
         if (name == null) {
-            return getAllUsers();
+            return getAllUsers(page, size, orderBy, desc);
         }
         List<UserRedis> users = redisTemplate.opsForValue().get(name);
         if (users == null) {
@@ -58,7 +66,7 @@ public class UserService {
                     .collect(Collectors.toList());
             redisTemplate.opsForValue().set(name, users, 10, TimeUnit.SECONDS);
         }
-        return users;
+        return ListResult.from(PageableUtils.convert(users, (PageRequest) PageableUtils.pageable(page, size, orderBy, desc)));
     }
 
     public User getUserById(Long id) {
