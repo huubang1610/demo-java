@@ -35,6 +35,8 @@ public class User {
     @UpdateTimestamp
     private Timestamp updatedAt;
     private Timestamp deleteAt;
+    private String userName;
+    private String passWord;
 
     public enum Gender {
         MALE,
@@ -46,6 +48,7 @@ public class User {
                 .name(userRequest.getName())
                 .email(userRequest.getEmail())
                 .gender(userRequest.getGender())
+                .userName(userRequest.getUserName())
                 .build();
     }
 }
