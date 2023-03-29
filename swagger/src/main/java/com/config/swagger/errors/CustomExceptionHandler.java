@@ -1,5 +1,6 @@
 package com.config.swagger.errors;
 
+import com.config.swagger.config.security.WebSecurityConfig;
 import com.config.swagger.dto.Responses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +31,4 @@ public class CustomExceptionHandler {
         }
         return Responses.badRequest(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),errorMessages);
     }
-
 }

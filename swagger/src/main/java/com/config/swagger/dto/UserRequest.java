@@ -24,4 +24,5 @@ public class UserRequest {
     private String userName;
     @NotNull(message = " PassWord không được để trống")
     private String passWord;
+
 }
