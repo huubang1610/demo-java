@@ -1,5 +1,6 @@
 package com.config.swagger.service;
 
+import com.config.swagger.config.security.JwtTokenUtil;
 import com.config.swagger.dto.LoginRequest;
 import com.config.swagger.dto.UserDetails;
 import com.config.swagger.dto.UserRequest;
@@ -33,9 +34,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final RedisTemplate<String, List<UserRedis>> redisTemplate;
     private final MessageProducer messageProducer;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    public UserDetails login (LoginRequest loginRequest){
-        return UserDetails.builder().build();
+    public UserDetails login(LoginRequest loginRequest) {
+        User user = userRepository.findByUserName(loginRequest.getUserName().toLowerCase()).orElseThrow(() -> ServiceException.badRequest("No username or password exists"));
+        if (!User.matches(loginRequest.getPassword(), user.getPassWord())) {
+            throw ServiceException.badRequest("Login failed");
+        }
+        return UserDetails.builder().accessToken(jwtTokenUtil.generateToken(user)).build();
+    }
+    public void logout() {
     }
 
     public User createUser(UserRequest userRequest) {
