@@ -1,0 +1,13 @@
+version: "3"
+services:
+  swagger-api:
+    container_name: swagger-api-dev
+    image: swagger-dev
+    build: .
+    environment:
+      - CONSUL_ACL_TOKEN = KQzrLGtAETejq97sjgzgMFdQnpp
+      - CONSUL_URL = https://consul.toprate.io
+      - ENV_NAME = training
+      - SERVER_PORT = 8090
+    ports:
+      - "8090:8090"

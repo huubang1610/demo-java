@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class User implements Serializable {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,11 +55,9 @@ public class User implements Serializable {
                 .build();
     }
     public static String encode(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
+        return new BCryptPasswordEncoder().encode(password);
     }
     public static boolean matches(String password, String hashedPassword) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(password, hashedPassword);
+        return new BCryptPasswordEncoder().matches(password, hashedPassword);
     }
 }
